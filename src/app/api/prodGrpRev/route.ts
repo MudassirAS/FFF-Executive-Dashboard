@@ -16,7 +16,8 @@ export async function GET(req: Request) {
         SELECT jd.ProductGroup, SUM(jd.QtySold * jd.UnitPrice) AS Revenue
         FROM jobDetail jd
         JOIN jobHeader jh ON jd.JobId = jh.JobId 
-        WHERE jh.completedAt BETWEEN @startDate AND @endDate
+        WHERE jh.completedAt BETWEEN @startDate AND @endDate AND
+          jd.Deleted IS NULL
         GROUP BY jd.ProductGroup
         ORDER BY Revenue DESC
       `);

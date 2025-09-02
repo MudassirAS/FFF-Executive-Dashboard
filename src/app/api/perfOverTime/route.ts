@@ -38,8 +38,8 @@ export async function GET(req: Request) {
             jh.LatestDeliveryDate
           FROM jobHeader jh
           JOIN jobDetail jd ON jh.jobId = jd.jobId
-          WHERE jh.completedAt IS NOT NULL
-            AND jh.completedAt BETWEEN @startDate AND @endDate
+          WHERE jh.completedAt BETWEEN @startDate AND @endDate AND
+            jd.Deleted IS NULL
         )
         SELECT
           CONVERT(varchar(10), DeliveryDay, 23) AS DeliveryDay, -- yyyy-mm-dd

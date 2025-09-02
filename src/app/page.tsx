@@ -45,6 +45,7 @@ export default function Home() {
                 setStartDate(e.target.value);
                 setRange("CUSTOM");
               }}
+              disabled={range !== "CUSTOM"}
             />
           </div>
           <div>
@@ -56,6 +57,7 @@ export default function Home() {
                 setEndDate(e.target.value);
                 setRange("CUSTOM");
               }}
+              disabled={range !== "CUSTOM"}
             />
           </div>
         </div>
@@ -79,6 +81,12 @@ export default function Home() {
             onClick={() => handleRangeClick(90, "90D")}
           >
             90D
+          </Button>
+          <Button
+            variant={range === "CUSTOM" ? "default" : "outline"}
+            onClick={() => setRange("CUSTOM")}
+          >
+            Custom
           </Button>
         </div>
       </div>

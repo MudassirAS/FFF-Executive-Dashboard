@@ -72,7 +72,6 @@ export default function ProdGrpRevChart({ startDate, endDate }: ProdGrpRevChartP
           padding={0.3}
           colors={{ scheme: "set2" }} // lighter distinct colors
           axisBottom={{
-            tickRotation: -30,
             legend: "Product Group",
             legendPosition: "middle",
             legendOffset: 45,

@@ -39,7 +39,8 @@ export async function GET(req: Request) {
         ${metricColumn} AS ${metricAlias}
       FROM jobHeader jh
       JOIN jobDetail jd ON jh.jobId = jd.jobId
-      WHERE jh.completedAt BETWEEN @startDate AND @endDate
+      WHERE (jh.completedAt BETWEEN @startDate AND @endDate) AND
+        jd.Deleted IS NULL
       GROUP BY jh.customerId, jh.CustomerName
       ORDER BY ${metricAlias} DESC
     `;
