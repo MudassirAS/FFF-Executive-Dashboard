@@ -10,6 +10,8 @@ import PerfOverTimeChart from "@/components/perfOverTimeChart";
 import Top10CustomersChart from "@/components/Top10CustomersChart";
 import ProdGrpRevChart from "@/components/ProdGrpRevChart";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import OrdersHeatmap from "@/components/OrdersHeatmap";
 
 export default function Home() {
   const today = new Date().toISOString().split("T")[0];
@@ -91,18 +93,31 @@ export default function Home() {
         </div>
       </div>
 
-      {/* KPI Cards Row */}
-      <h1>Headline KPIs</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-        <OnTimeDeliveryKPI startDate={startDate} endDate={endDate} />
-        <TotalVolumeKPI startDate={startDate} endDate={endDate} />
-        <TotalRevenueKPI startDate={startDate} endDate={endDate} />
-        <AvgLoadUtilisationKPI startDate={startDate} endDate={endDate} />
+      {/* Headline KPIs inside Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Headline KPIs</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+            <OnTimeDeliveryKPI startDate={startDate} endDate={endDate} />
+            <TotalVolumeKPI startDate={startDate} endDate={endDate} />
+            <TotalRevenueKPI startDate={startDate} endDate={endDate} />
+            <AvgLoadUtilisationKPI startDate={startDate} endDate={endDate} />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Performance Over Time */}
+      <PerfOverTimeChart startDate={startDate} endDate={endDate} />
+
+      {/* Side-by-side charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Top10CustomersChart startDate={startDate} endDate={endDate} />
+        <ProdGrpRevChart startDate={startDate} endDate={endDate} />
       </div>
 
-      <PerfOverTimeChart startDate={startDate} endDate={endDate} />
-      <Top10CustomersChart startDate={startDate} endDate={endDate} />
-      <ProdGrpRevChart startDate={startDate} endDate={endDate} />
+      <OrdersHeatmap startDate={startDate} endDate={endDate} />
     </div>
   );
 }

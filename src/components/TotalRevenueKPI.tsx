@@ -55,7 +55,11 @@ export default function TotalRevenueKPI({
       <CardContent className="flex flex-col items-center justify-center space-y-2">
         {totalRevenue !== null ? (
           <p className="text-4xl font-bold text-purple-600">
-            {totalRevenue.toLocaleString()}
+            $
+            {totalRevenue.toLocaleString("en-US", {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}
           </p>
         ) : (
           <p className="text-muted-foreground">Loading...</p>

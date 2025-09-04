@@ -63,18 +63,18 @@ export default function ProdGrpRevChart({ startDate, endDate }: ProdGrpRevChartP
       <CardHeader>
         <CardTitle>Revenue by Product Group</CardTitle>
       </CardHeader>
-      <CardContent className="h-[400px]">
+      <CardContent className="h-[500px]">
         <ResponsiveBar
           data={data}
           keys={["Revenue"]}
           indexBy="ProductGroup"
-          margin={{ top: 40, right: 40, bottom: 60, left: 80 }}
+          margin={{ top: 20, right: 40, bottom: 40, left: 80 }}
           padding={0.3}
           colors={{ scheme: "set2" }} // lighter distinct colors
           axisBottom={{
             legend: "Product Group",
             legendPosition: "middle",
-            legendOffset: 45,
+            legendOffset: 35,
           }}
           axisLeft={{
             legend: "Revenue",

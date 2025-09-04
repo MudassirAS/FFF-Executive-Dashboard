@@ -50,7 +50,6 @@ export default function Top10CustomersChart({ startDate, endDate }: Props) {
     value: metric === "revenue" ? d.TotalRevenue ?? 0 : d.TotalVolume ?? 0,
   }));
 
-
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row justify-between items-center">
@@ -67,51 +66,50 @@ export default function Top10CustomersChart({ startDate, endDate }: Props) {
         </select>
       </CardHeader>
 
-      <CardContent style={{ height: 500 }}>
+      <CardContent className="h-[500px]">
         <ResponsiveBar
-            data={barData}
-            keys={["value"]}
-            indexBy="customer"
-            margin={{ top: 40, right: 50, bottom: 120, left: 80 }}
-            padding={0.5}
-            colors={() => "#08a4e2ff"}
-            borderRadius={6}
-            axisBottom={{
-                tickRotation: -30,
-                legend: "Customers",
-                legendPosition: "end",
-                legendOffset: 30,
-            }}
-            axisLeft={{
-                legend: metric === "revenue" ? "Revenue" : "Order Volume",
-                legendPosition: "middle",
-                legendOffset: -60,
-                format: ">-.2s", // Shortens numbers like 2640000 → 2.64M
-            }}
-            enableLabel={true}
-            labelSkipWidth={20}
-            labelSkipHeight={12}
-            labelTextColor="#fff"
-            valueFormat=">-.2s"
-            tooltip={({ indexValue, value }) => (
-                <div
-                style={{
-                    background: "white",
-                    padding: "4px 8px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                }}
-                >
-                {indexValue}:{" "}
-                <strong>
-                    {metric === "revenue"
-                    ? `$${Number(value).toLocaleString()}`
-                    : Number(value).toLocaleString()}
-                </strong>
-                </div>
-            )}
+          data={barData}
+          keys={["value"]}
+          indexBy="customer"
+          layout="horizontal" // Makes the bar chart horizontal
+          margin={{ top: 20, right: 30, bottom: 60, left: 180 }}
+          padding={0.5}
+          colors={() => "#08a4e2ff"}
+          borderRadius={6}
+          axisBottom={{
+            legend: metric === "revenue" ? "Revenue" : "Order Volume",
+            legendPosition: "middle",
+            legendOffset: 40,
+            format: ">-.2s",
+          }}
+          axisLeft={{
+            legend: "Customers",
+            legendPosition: "end",
+            legendOffset: -120,
+          }}
+          enableLabel={true}
+          labelSkipWidth={20}
+          labelSkipHeight={12}
+          labelTextColor="#fff"
+          valueFormat=">-.2s"
+          tooltip={({ indexValue, value }) => (
+            <div
+              style={{
+                background: "white",
+                padding: "4px 8px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+              }}
+            >
+              {indexValue}:{" "}
+              <strong>
+                {metric === "revenue"
+                  ? `$${Number(value).toLocaleString()}`
+                  : `Volume: ${Number(value).toLocaleString()}`}
+              </strong>
+            </div>
+          )}
         />
-
       </CardContent>
     </Card>
   );
