@@ -1,7 +1,6 @@
 // src/components/ProdGrpRevChart.tsx
 "use client";
 
-import { useMemo } from "react";
 import { ResponsiveBar } from "@nivo/bar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 

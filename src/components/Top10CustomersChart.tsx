@@ -1,7 +1,7 @@
 // src/components/Top10CustomersChart.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ResponsiveBar } from "@nivo/bar";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 
