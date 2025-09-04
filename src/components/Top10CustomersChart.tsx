@@ -1,3 +1,4 @@
+// src/components/Top10CustomersChart.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,40 +13,22 @@ type CustomerRow = {
 };
 
 interface Props {
-  startDate: string;
-  endDate: string;
+  top10Volume?: CustomerRow[] | null;
+  top10Revenue?: CustomerRow[] | null;
 }
 
-export default function Top10CustomersChart({ startDate, endDate }: Props) {
-  const [data, setData] = useState<CustomerRow[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function Top10CustomersChart({ top10Volume, top10Revenue }: Props) {
   const [metric, setMetric] = useState<"volume" | "revenue">("volume");
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
-        const res = await fetch(
-          `/api/top10Cust?startDate=${startDate}&endDate=${endDate}&metric=${metric}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch top 10 customers");
-        const json: CustomerRow[] = await res.json();
-        setData(json);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, [startDate, endDate, metric]);
-
-  if (loading) {
+  // Loading while either dataset is undefined (parent still fetching)
+  if (top10Volume === undefined || top10Revenue === undefined) {
     return <div className="p-4">Loading top 10 customers...</div>;
   }
 
+  const sourceData = metric === "revenue" ? (top10Revenue ?? []) : (top10Volume ?? []);
+
   // Prepare data for Nivo bar chart
-  const barData = data.map((d) => ({
+  const barData = sourceData.map((d) => ({
     customer: d.CustomerName,
     value: metric === "revenue" ? d.TotalRevenue ?? 0 : d.TotalVolume ?? 0,
   }));
@@ -71,7 +54,7 @@ export default function Top10CustomersChart({ startDate, endDate }: Props) {
           data={barData}
           keys={["value"]}
           indexBy="customer"
-          layout="horizontal" // Makes the bar chart horizontal
+          layout="horizontal"
           margin={{ top: 20, right: 30, bottom: 60, left: 180 }}
           padding={0.5}
           colors={() => "#08a4e2ff"}

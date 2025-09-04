@@ -3,64 +3,41 @@
 
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
-import L, { LatLngTuple } from "leaflet";
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet.heat";
 
-// ---- Types ----
 type HeatmapPoint = [number, number, number]; // lat, lng, intensity
 
 interface OrdersHeatmapProps {
-  startDate: string;
-  endDate: string;
+  data?: { CustomerLatitude: number | null; CustomerLongitude: number | null; QtySold: number | null }[] | null;
 }
 
-// Extend leaflet with heatLayer typing
-declare module "leaflet" {
-  function heatLayer(
-    latlngs: HeatmapPoint[],
-    options?: {
-      minOpacity?: number;
-      maxZoom?: number;
-      radius?: number;
-      blur?: number;
-      max?: number;
-      gradient?: Record<string, string>;
-    }
-  ): L.Layer;
-}
+type LeafletWithHeat = {
+  heatLayer: (latlngs: HeatmapPoint[], options?: { radius?: number; blur?: number; max?: number }) => L.Layer;
+};
 
-export default function OrdersHeatmap({ startDate, endDate }: OrdersHeatmapProps) {
+export default function OrdersHeatmap({ data }: OrdersHeatmapProps) {
   const [heatmapPoints, setHeatmapPoints] = useState<HeatmapPoint[]>([]);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch(
-          `/api/ordersHeatmap?startDate=${startDate}&endDate=${endDate}`
-        );
-        if (!response.ok) throw new Error("Failed to fetch heatmap data");
-
-        const data: { CustomerLatitude: number; CustomerLongitude: number; QtySold: number }[] =
-          await response.json();
-
-        const points: HeatmapPoint[] = data
-          .filter((row) => row.CustomerLatitude !== null && row.CustomerLongitude !== null)
-          .map((row) => [row.CustomerLatitude, row.CustomerLongitude, row.QtySold]);
-
-        setHeatmapPoints(points);
-      } catch (err) {
-        console.error(err);
-      }
+    if (!data) {
+      // parent still loading (data === undefined) or no data (null) -> clear points
+      setHeatmapPoints([]);
+      return;
     }
 
-    fetchData();
-  }, [startDate, endDate]);
+    const points: HeatmapPoint[] = data
+      .filter((row) => row.CustomerLatitude !== null && row.CustomerLongitude !== null)
+      .map((row) => [Number(row.CustomerLatitude), Number(row.CustomerLongitude), Number(row.QtySold ?? 1)]);
+
+    setHeatmapPoints(points);
+  }, [data]);
 
   return (
     <MapContainer
-      center={[54.9833, -6.6666]} // Pakistan center as default
-      zoom={5}
+      center={[54.9844, -6.704]} // approximate Garvagh Forest center
+      zoom={10}
       style={{ height: "500px", width: "100%" }}
     >
       <TileLayer
@@ -72,18 +49,25 @@ export default function OrdersHeatmap({ startDate, endDate }: OrdersHeatmapProps
   );
 }
 
-interface HeatLayerProps {
-  points: HeatmapPoint[];
-}
-
-function HeatLayer({ points }: HeatLayerProps) {
+function HeatLayer({ points }: { points: HeatmapPoint[] }) {
   const map = useMap();
 
   useEffect(() => {
-    const heat = L.heatLayer(points, { radius: 25 }).addTo(map);
+    if (!points || points.length === 0) return;
+
+    const leafletWithHeat = (L as unknown) as LeafletWithHeat;
+
+    // create heat layer and add to map
+    const heat = leafletWithHeat.heatLayer(points, { radius: 25 }).addTo(map);
 
     return () => {
-      map.removeLayer(heat);
+      try {
+        if (map.hasLayer(heat)) {
+          map.removeLayer(heat);
+        }
+      } catch (e) {
+        // ignore remove errors
+      }
     };
   }, [map, points]);
 

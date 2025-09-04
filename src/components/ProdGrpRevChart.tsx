@@ -1,7 +1,7 @@
 // src/components/ProdGrpRevChart.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { ResponsiveBar } from "@nivo/bar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -11,44 +11,16 @@ type ApiRow = {
 };
 
 interface ProdGrpRevChartProps {
-  startDate: string; // format: yyyy-mm-dd
-  endDate: string;   // format: yyyy-mm-dd
+  data?: ApiRow[] | null;
 }
 
-export default function ProdGrpRevChart({ startDate, endDate }: ProdGrpRevChartProps) {
-  const [data, setData] = useState<ApiRow[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!startDate || !endDate) return;
-
-    async function fetchData() {
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/prodGrpRev?startDate=${startDate}&endDate=${endDate}`);
-        const json = await res.json();
-
-        if (!Array.isArray(json)) {
-          console.error("Unexpected API response:", json);
-          setData([]);
-          return;
-        }
-
-        setData(json);
-      } catch (err) {
-        console.error("Error fetching revenue by product group:", err);
-        setData([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, [startDate, endDate]);
-
-  if (loading) {
+export default function ProdGrpRevChart({ data }: ProdGrpRevChartProps) {
+  // show loading while parent fetches
+  if (data === undefined) {
     return <div className="p-4">Loading revenue by product group...</div>;
   }
+
+  const rows = data ?? [];
 
   // Format numbers with k suffix
   const formatRevenue = (value: number) => {
@@ -65,12 +37,12 @@ export default function ProdGrpRevChart({ startDate, endDate }: ProdGrpRevChartP
       </CardHeader>
       <CardContent className="h-[500px]">
         <ResponsiveBar
-          data={data}
+          data={rows}
           keys={["Revenue"]}
           indexBy="ProductGroup"
           margin={{ top: 20, right: 40, bottom: 40, left: 80 }}
           padding={0.3}
-          colors={{ scheme: "set2" }} // lighter distinct colors
+          colors={{ scheme: "set2" }}
           axisBottom={{
             legend: "Product Group",
             legendPosition: "middle",
@@ -88,8 +60,7 @@ export default function ProdGrpRevChart({ startDate, endDate }: ProdGrpRevChartP
           label={(d) => formatRevenue(Number(d.value))}
           tooltip={({ indexValue, value, color }) => (
             <div className="bg-white p-2 shadow border rounded text-sm">
-              <strong style={{ color }}>{indexValue}</strong>:{" "}
-              {Number(value).toLocaleString()}
+              <strong style={{ color }}>{indexValue}</strong>: {Number(value).toLocaleString()}
             </div>
           )}
           animate={true}
